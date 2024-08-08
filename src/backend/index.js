@@ -30,6 +30,7 @@ async function createDatabase() {
     console.log("Connected to the games SQlite database.");
   });
 
+  // save the entire raw data
   const createRawGameDataSql = `CREATE TABLE IF NOT EXISTS raw_game_data (
     date TEXT PRIMARY KEY,
     appid INTEGER NOT NULL,
