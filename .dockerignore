@@ -1,0 +1,15 @@
+# directories
+**/bin/
+**/obj/
+**/out/
+**/node_modules/
+**/dist/
+
+# files
+Dockerfile*
+**/*.trx
+**/*.md
+**/*.ps1
+**/*.cmd
+**/*.sh
+npm-debug.log

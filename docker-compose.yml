@@ -1,0 +1,25 @@
+services:
+  db:
+    container_name: "blog.db"
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  # frontend:
+  #   container_name: "blog.frontend"
+  #   image: "blog.frontend"
+  #   ports:
+  #     - 3001:4321
+  #   build:
+  #     dockerfile: frontend.dockerfile
+  api:
+    container_name: "blog.api"
+    image: "blog.api"
+    ports:
+      - 3000:3000
+    build: 
+      dockerfile: backend.dockerfile
+    depends_on:
+      - db

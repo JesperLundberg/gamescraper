@@ -1,0 +1,15 @@
+{
+  "name": "gamescraper",
+  "version": "1.0.0",
+  "main": "src/backend/index.js",
+  "scripts": {
+    "start": "node ./src/backend/index.js",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
+}
