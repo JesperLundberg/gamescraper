@@ -67,6 +67,9 @@ async function create() {
   });
 }
 
+async function saveRawData(gameData) {}
+
 module.exports = {
   create: create,
+  saveRawData: saveRawData,
 };

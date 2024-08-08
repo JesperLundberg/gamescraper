@@ -1,28 +1,10 @@
 const config = require("../../config");
 const database = require("./database");
-
-async function getData() {
-  const steamAPIGetRecentGamesUri =
-    "https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=" +
-    config.steamApiKey +
-    "&steamid=" +
-    config.steamUserId +
-    "&format=json";
-
-  console.log(steamAPIGetRecentGamesUri);
-
-  const result = await fetch(steamAPIGetRecentGamesUri);
-
-  const json = await result.json();
-
-  console.log(json.response.games[0]);
-
-  return json.response;
-}
+const steamApi = require("./steamApi");
 
 async function saveRawDataToDatabase(gameData) {}
 
-const rawGameData = getData();
+const rawGameData = steamApi.getRecentGameData();
 
 database.create();
 
