@@ -1,3 +1,5 @@
+const config = require("../../config"); // NOTE: Check out dotenv package for managing environment variables
+
 async function getRecentGameData() {
   const steamAPIGetRecentGamesUri =
     "https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=" +
@@ -6,11 +8,13 @@ async function getRecentGameData() {
     config.steamUserId +
     "&format=json";
 
-  console.log(steamAPIGetRecentGamesUri);
-
   const result = await fetch(steamAPIGetRecentGamesUri);
 
   const json = await result.json();
 
   return json.response;
 }
+
+module.exports = {
+  getRecentGameData: getRecentGameData,
+};

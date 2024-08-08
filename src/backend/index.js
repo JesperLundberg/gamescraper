@@ -1,11 +1,12 @@
-const config = require("../../config");
 const database = require("./database");
 const steamApi = require("./steamApi");
 
-async function saveRawDataToDatabase(gameData) {}
+async function main() {
+  const rawGameData = await steamApi.getRecentGameData();
 
-const rawGameData = steamApi.getRecentGameData();
+  database.create();
 
-database.create();
+  database.saveRawData(rawGameData);
+}
 
-saveRawDataToDatabase(rawGameData);
+main();
