@@ -1,6 +1,6 @@
 const sqlite = require("sqlite3").verbose();
 
-const config = require("./config");
+const config = require("../../config");
 
 async function getData() {
   const steamAPIGetRecentGamesUri =
@@ -10,9 +10,13 @@ async function getData() {
     config.steamUserId +
     "&format=json";
 
+  console.log(steamAPIGetRecentGamesUri);
+
   const result = await fetch(steamAPIGetRecentGamesUri);
 
   const json = await result.json();
+
+  console.log(json.response.games[0]);
 
   return json.response;
 }
@@ -31,7 +35,12 @@ async function createDatabase() {
     appid INTEGER NOT NULL,
     name TEXT NOT NULL,
     playtime_2weeks INTEGER,
-    playtime_forever INTEGER
+    playtime_forever INTEGER,
+    img_icon_url TEXT,
+    playtime_windows_forever INTEGER,
+    playtime_mac_forever INTEGER,
+    playtime_linux_forever INTEGER,
+    playtime_deck_forever INTEGER
   );`;
 
   // create table for raw game data

@@ -98,3 +98,4 @@ fabric.properties
 
 # Own added files
 config.js
+db/*
