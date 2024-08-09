@@ -1,5 +1,7 @@
 const sqlite = require("sqlite3").verbose();
 
+const config = require("../../config");
+
 async function runDbCommand(db, sqlCommand, message) {
   db.run(sqlCommand, (err) => {
     console.log(message);
@@ -9,17 +11,41 @@ async function runDbCommand(db, sqlCommand, message) {
   });
 }
 
-async function create() {
+async function openDatabase(path) {
   // open database in memory
-  const db = new sqlite.Database("db/games.db", (err) => {
+  const db = new sqlite.Database(path, (err) => {
     if (err) {
       return console.error(err.message);
     }
     console.log("Connected to the games SQlite database.");
   });
 
-  // save the entire raw data
-  const createRawGameDataSql = `CREATE TABLE IF NOT EXISTS raw_game_data (
+  return db;
+}
+
+async function closeDatabase(db) {
+  // close the database connection
+  db.close((err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log("Close the database connection.");
+  });
+}
+
+async function create() {
+  const db = await openDatabase(config.databasePath);
+
+  // create the raw data table
+  const createRawDataSql = `CREATE TABLE IF NOT EXISTS raw_data (
+    date TEXT PRIMARY KEY,
+    json TEXT
+  );`;
+
+  runDbCommand(db, createRawDataSql, "Create raw data table");
+
+  // save the bronze data
+  const createBronzeSql = `CREATE TABLE IF NOT EXISTS raw_game_data (
     date TEXT,
     appid INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -33,9 +59,13 @@ async function create() {
   );`;
 
   // create table for raw game data
-  runDbCommand(db, createRawGameDataSql, "Create raw game data table");
+  runDbCommand(db, createBronzeSql, "Create raw game data table");
 
-  // NOTE: Upsert on the date, but do not have date as a primary key
+  // NOTE: Upsert on the date and update all the other fields
+  // NOTE: Probably need aggregated primary key on date and appid
+  //const upsertBronzeSql = `INSERT INTO raw_game_data (date, appid, name, playtime_2weeks, playtime_forever, img_icon_url, playtime_windows_forever, playtime_mac_forever, playtime_linux_forever, playtime_deck_forever) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(date) DO UPDATE SET playtime_2weeks = ?, playtime_forever = ?, img_icon_url = ?, playtime_windows_forever = ?, playtime_mac_forever = ?, playtime_linux_forever = ?, playtime_deck_forever = ?;`;
+  //
+  //runDbCommand(db, upsertBronzeSql, "Upsert raw game data");
 
   //// insert some dummy data
   //const insertDummyData = `INSERT INTO raw_game_data (date, appid, name, playtime_2weeks, playtime_forever) VALUES ('2021-08-01', 730, 'Counter-Strike: Global Offensive', 0, 0);`;
@@ -47,24 +77,11 @@ async function create() {
   //
   //runDbCommand(db, updateDummyData, "Update dummy data");
 
-  // create table for raw game data
-  db.close((err) => {
-    // close the database connection
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log("Close the database connection.");
-  });
+  closeDatabase(db);
 }
 
-async function saveRawData(gameData) {
-  // open database in memory
-  const db = new sqlite.Database("db/games.db", (err) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log("Connected to the games SQlite database.");
-  });
+async function saveBronzeData(gameData) {
+  const db = await openDatabase(config.databasePath);
 
   // save the entire raw data
   const insertRawGameDataSql = `INSERT INTO raw_game_data (date, appid, name, playtime_2weeks, playtime_forever, img_icon_url, playtime_windows_forever, playtime_mac_forever, playtime_linux_forever, playtime_deck_forever) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
@@ -90,16 +107,10 @@ async function saveRawData(gameData) {
     insertRawGameData.finalize();
   }
 
-  // close the database connection
-  db.close((err) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log("Close the database connection.");
-  });
+  closeDatabase(db);
 }
 
 module.exports = {
   create: create,
-  saveRawData: saveRawData,
+  saveBronzeData: saveBronzeData,
 };
